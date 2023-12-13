@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-
+from tqdm import tqdm
 from src.models.BnnModel import BayesianModel
 from src.data.data_loader import (
     load_mauna_loa_atmospheric_co2,
@@ -43,7 +43,13 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 num_epochs = 1000
 train_losses = []
 
-for epoch in range(num_epochs):
+
+
+
+# initialize the tqdm looper
+loop = tqdm(range(num_epochs), desc="Epochs", leave=True)
+
+for epoch in loop:
     # Forward pass
     outputs = model(X1_train_tensor)
     loss = loss_function(outputs, y1_train_tensor)
@@ -54,6 +60,11 @@ for epoch in range(num_epochs):
     optimizer.step()
 
     train_losses.append(loss.item())
+
+    # Display the epoch number and the loss
+    loop.set_description(f"Epoch [{epoch}/{num_epochs}]")
+    loop.set_postfix(loss=loss.item())
+
 
 # ---------  Plot training losses  ----------
 
